@@ -39,8 +39,8 @@ namespace RepositoryPattern.Domain.Services
                 return guitarModel;
             }
 
-            _logger.LogError($"No guitar found with ID: {id}");
-            throw new ValidationException($"No guitar found for IDs: {id}");
+            _logger.LogError($"No guitar found with Id: {id}");
+            throw new ValidationException($"No guitar found with Id: {id}");
         }
 
         public async Task<List<Guitar>> GetAllGuitars()
