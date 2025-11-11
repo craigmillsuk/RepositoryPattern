@@ -5,7 +5,7 @@ namespace RepositoryPattern.Domain.Interfaces
     public interface IGuitarService
     {
         // The Get Guitar Details method
-        Task<Guitar> GetGuitarDetails(Guid id);
+        Task<Guitar> GetGuitar(Guid id);
 
         // The Get All Guitars method
         Task<List<Guitar>> GetAllGuitars();

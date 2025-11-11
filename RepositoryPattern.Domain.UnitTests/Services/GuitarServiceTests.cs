@@ -1,21 +1,27 @@
-﻿using NSubstitute;
-using RepositoryPattern.Domain.Interfaces;
-using RepositoryPattern.Domain.Models;
+﻿using Microsoft.Extensions.Logging;
+using NSubstitute;
+using NSubstitute.ReceivedExtensions;
+using NSubstitute.ReturnsExtensions;
+using RepositoryPattern.Domain.Services;
 using RepositoryPattern.Repository.Interfaces;
 using RepositoryPattern.Repository.Models;
+using System.ComponentModel.DataAnnotations;
 using Xunit;
 
 
 namespace RepositoryPattern.Domain.UnitTests.Services
 {
+
     public class GuitarServiceTests
     {
+        #region GetGuitar
+
         [Fact]
-        public async Task GetGuitarDetails_Success_ReturnsGuitar()
+        public async Task GetGuitar_Success_ReturnsGuitar()
         {
-            //Arrange
+            // Arrange
             var id = Guid.NewGuid();
-            var guitarDTO = new GuitarDTO()
+            var guitarDTO = new GuitarDTO
             {
                 Id = id,
                 Make = "Gibson",
@@ -25,28 +31,87 @@ namespace RepositoryPattern.Domain.UnitTests.Services
                 Price = 1000
             };
 
-            var guitar = new Guitar()
-            {
-                Id = id,
-                Make = "Gibson",
-                Model = "Leas Paul",
-                NumberOfFrets = 24,
-                StringGauge = "10-48",
-                Price = 1000
-            };
-            var guitarService = Substitute.For<IGuitarService>();
+            var logger = Substitute.For<ILogger<GuitarService>>();
             var guitarDetails = Substitute.For<IGuitarDetails>();
-
             guitarDetails.GetGuitarAsync(id).Returns(guitarDTO);
-            guitarService.GetGuitarDetails(id).Returns(guitar);
 
-            //Act
-            var result = await guitarService.GetGuitarDetails(id);
+            var guitarService = new GuitarService(logger, guitarDetails);
 
-            //Assert
-            Assert.NotNull(result); 
-            Assert.Equivalent(guitar, result);
+            // Act
+            var result = await guitarService.GetGuitar(id);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equivalent(guitarDTO, result);
+            logger.DidNotReceive().LogError($"No guitar found with ID: {id}");
         }
 
+        [Fact]
+        public async Task GetGuitar_Falure_ThrowsValidationException()
+        {
+            // Arrange
+            var id = Guid.NewGuid();
+
+            var logger = Substitute.For<ILogger<GuitarService>>();
+            var guitarDetails = Substitute.For<IGuitarDetails>();
+            guitarDetails.GetGuitarAsync(id).ReturnsNull();
+
+            var guitarService = new GuitarService(logger, guitarDetails);
+
+            // Act & Assert
+            await Assert.ThrowsAsync<ValidationException>(async () =>
+            {
+                await guitarService.GetGuitar(id);
+            });
+
+            logger.Received().LogError($"No guitar found with ID: {id}");
+        }
+
+        #endregion
+
+        #region GetAllGuitars
+        [Fact]
+        public async Task GetAllGuitars_Success_ReturnsGuitar()
+        {
+            // Arrange
+            var id = Guid.NewGuid();
+            var guitarDTO = new List<GuitarDTO>
+            {
+                new()
+                {
+                    Id = id,
+                    Make = "Gibson",
+                    Model = "Les Paul",
+                    NumberOfFrets = 24,
+                    StringGauge = "10-48",
+                    Price = 1000
+                },
+                  new()
+                {
+                    Id = id,
+                    Make = "Fender",
+                    Model = "Stratocaster",
+                    NumberOfFrets = 24,
+                    StringGauge = "10-48",
+                    Price = 800
+                }
+            };
+
+            var logger = Substitute.For<ILogger<GuitarService>>();
+            var guitarDetails = Substitute.For<IGuitarDetails>();
+            guitarDetails.GetAllGuitarAsync().Returns(guitarDTO);
+
+            var guitarService = new GuitarService(logger, guitarDetails);
+
+            // Act
+            var result = await guitarService.GetAllGuitars();
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equivalent(guitarDTO, result);
+            logger.DidNotReceive().LogError($"No guitars found!");
+        }
+
+        #endregion
     }
 }
