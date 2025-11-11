@@ -1,4 +1,5 @@
-﻿using RepositoryPattern.Domain.Interfaces;
+﻿using Microsoft.Extensions.Logging;
+using RepositoryPattern.Domain.Interfaces;
 using RepositoryPattern.Domain.Models;
 using RepositoryPattern.Repository.Interfaces;
 using System.ComponentModel.DataAnnotations;
@@ -10,44 +11,50 @@ namespace RepositoryPattern.Domain.Services
     /// </summary>
     public class GuitarService : IGuitarService
     {
+        private readonly ILogger<GuitarService> _logger;
         private IGuitarDetails _guitarDetails;
-        public GuitarService(IGuitarDetails guitarDetails) {
+
+        public GuitarService(ILogger<GuitarService> logger, 
+            IGuitarDetails guitarDetails) {
+            _logger = logger;
             _guitarDetails = guitarDetails;
         }
 
-        public async Task<Guitar> GetGuitarDetails(Guid id)
+        public async Task<Guitar> GetGuitar(Guid id)
         {
-            var guitarDetails = await _guitarDetails.GetGuitarAsync(id);
+            var guitar = await _guitarDetails.GetGuitarAsync(id);
 
-            if (guitarDetails != null)
+            if (guitar != null)
             {
-                var guitar = new Guitar()
+                var guitarModel = new Guitar()
                 {
-                    Id = guitarDetails.Id,
-                    Make = guitarDetails.Make,
-                    Model = guitarDetails.Model,
-                    NumberOfFrets = guitarDetails.NumberOfFrets,
-                    StringGauge = guitarDetails.StringGauge,
-                    Price = guitarDetails.Price
+                    Id = guitar.Id,
+                    Make = guitar.Make,
+                    Model = guitar.Model,
+                    NumberOfFrets = guitar.NumberOfFrets,
+                    StringGauge = guitar.StringGauge,
+                    Price = guitar.Price
                 };
 
-                return guitar;
+                return guitarModel;
             }
 
-            throw new ValidationException($"No guitar found for ID: {id}");
+            _logger.LogError($"No guitar found with ID: {id}");
+            throw new ValidationException($"No guitar found for IDs: {id}");
         }
 
         public async Task<List<Guitar>> GetAllGuitars()
         {
-            var guitarDetails = await _guitarDetails.GetAllGuitarAsync();
+            var allGuitars = await _guitarDetails.GetAllGuitarAsync();
             var guitars = new List<Guitar>();
 
-            if(guitarDetails == null)
+            if(allGuitars == null)
             {
+                _logger.LogError($"No guitars found!");
                 throw new ValidationException($"No guitars found!");
             }
 
-            foreach (var item in guitarDetails)
+            foreach (var item in allGuitars)
             {
 
                 guitars.Add(new Guitar

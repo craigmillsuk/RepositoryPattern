@@ -29,7 +29,7 @@ namespace RepositoryPattern.Controllers
                 return BadRequest("Guitar ID cannot be empty.");
             }
 
-            var guitarDetails = await _guitarService.GetGuitarDetails(id);
+            var guitarDetails = await _guitarService.GetGuitar(id);
 
             var response = new GuitarResponse
             {
