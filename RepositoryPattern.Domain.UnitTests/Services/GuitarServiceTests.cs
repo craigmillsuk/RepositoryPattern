@@ -19,7 +19,7 @@ namespace RepositoryPattern.Domain.UnitTests.Services
             {
                 Id = id,
                 Make = "Gibson",
-                Model = "Leas Paul",
+                Model = "Les Paul",
                 NumberOfFrets = 24,
                 StringGauge = "10-48",
                 Price = 1000
