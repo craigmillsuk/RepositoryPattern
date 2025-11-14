@@ -1,5 +1,4 @@
-﻿using Microsoft.Azure.Cosmos.Serialization.HybridRow;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using NSubstitute;
 using NSubstitute.ReceivedExtensions;
 using NSubstitute.ReturnsExtensions;
@@ -12,7 +11,6 @@ using Xunit;
 
 namespace RepositoryPattern.Domain.UnitTests.Services
 {
-
     public class GuitarServiceTests
     {
         #region GetGuitar
