@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Azure.Cosmos.Serialization.HybridRow;
+using Microsoft.Extensions.Logging;
 using NSubstitute;
 using NSubstitute.ReceivedExtensions;
 using NSubstitute.ReturnsExtensions;
@@ -51,6 +52,7 @@ namespace RepositoryPattern.Domain.UnitTests.Services
         {
             // Arrange
             var id = Guid.NewGuid();
+            var errorMessage = $"No guitar found with Id: {id}";
 
             var logger = Substitute.For<ILogger<GuitarService>>();
             var guitarDetails = Substitute.For<IGuitarDetails>();
@@ -59,17 +61,19 @@ namespace RepositoryPattern.Domain.UnitTests.Services
             var guitarService = new GuitarService(logger, guitarDetails);
 
             // Act & Assert
-            await Assert.ThrowsAsync<ValidationException>(async () =>
+           var result = await Assert.ThrowsAsync<ValidationException>(async () =>
             {
                 await guitarService.GetGuitar(id);
             });
 
-            logger.Received().LogError($"No guitar found with ID: {id}");
+            Assert.Equal(errorMessage, result.Message);
+            logger.Received().LogError(errorMessage);
         }
 
         #endregion
 
         #region GetAllGuitars
+
         [Fact]
         public async Task GetAllGuitars_Success_ReturnsGuitar()
         {
@@ -110,6 +114,28 @@ namespace RepositoryPattern.Domain.UnitTests.Services
             Assert.NotNull(result);
             Assert.Equivalent(guitarDTO, result);
             logger.DidNotReceive().LogError($"No guitars found!");
+        }
+
+        [Fact]
+        public async Task GetAllGuitars_Falure_ThrowsValidationException()
+        {
+            // Arrange
+            var logger = Substitute.For<ILogger<GuitarService>>();
+            var guitarDetails = Substitute.For<IGuitarDetails>();
+            var errorMessage = "No guitars found!";
+
+            guitarDetails.GetAllGuitarAsync().ReturnsNull();
+
+            var guitarService = new GuitarService(logger, guitarDetails);
+
+            // Act & Assert
+            var result = await Assert.ThrowsAsync<ValidationException>(async () =>
+            {
+                await guitarService.GetAllGuitars();
+            });
+
+            Assert.Equal(errorMessage, result.Message);
+            logger.Received().LogError(errorMessage);
         }
 
         #endregion
