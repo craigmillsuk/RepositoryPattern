@@ -1,8 +1,10 @@
 {
   "stryker-config": {
     "mutate": [
-      "**/*.cs", 
-      "!**/Models/**"
+      "**/*.cs", // Include ALL .cs files first
+      "!**/ResponseModels/**",
+      "!**/Middleware/**",
+      "!**/Program.cs"
     ],
     "thresholds": {
       "high": 90,

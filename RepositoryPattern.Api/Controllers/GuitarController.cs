@@ -25,7 +25,7 @@ namespace RepositoryPattern.Controllers
         {
             if (id == Guid.Empty)
             {
-                _logger.LogWarning("Invalid guitar ID provided (empty GUID).");
+                _logger.LogError("Invalid guitar ID provided (empty GUID).");
                 return BadRequest("Guitar ID cannot be empty.");
             }
 
@@ -51,7 +51,7 @@ namespace RepositoryPattern.Controllers
 
             if (guitars == null || !guitars.Any())
             {
-                _logger.LogInformation("No guitars found in the database.");
+                _logger.LogError("No guitars found in the database.");
                 return NotFound("No guitars found.");
             }
 
