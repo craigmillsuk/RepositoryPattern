@@ -1,43 +1,35 @@
-﻿using Newtonsoft.Json;
-
-namespace RepositoryPattern.Repository.Models
+﻿namespace RepositoryPattern.Api.RequestModels
 {
-    public record GuitarDTO
+    public class GuitarRequest
     {
         /// <summary>
         /// Id of the guitar
         /// </summary>
-        [JsonProperty("id")]
         public Guid Id { get; init; }
 
         /// <summary>
         /// Make of the guitar
         /// </summary>
-        [JsonProperty("make")]
         public string Make { get; init; } = string.Empty;
 
         /// <summary>
         /// Model of the guitar
         /// </summary>
-        [JsonProperty("model")]
         public string Model { get; init; } = string.Empty;
 
         /// <summary>
         /// Number of frets of the guitar
         /// </summary>
-        [JsonProperty("numberOfFrets")]
         public int NumberOfFrets { get; init; }
 
         /// <summary>
         /// String gauge of the guitar
         /// </summary>
-        [JsonProperty("stringGauge")]
         public string StringGauge { get; init; } = string.Empty;
 
         /// <summary>
         /// Pice of the guitar
         /// </summary>
-        [JsonProperty("price")]
         public double Price { get; init; }
     }
 }

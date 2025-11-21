@@ -2,7 +2,9 @@
 using RepositoryPattern.Domain.Interfaces;
 using RepositoryPattern.Domain.Models;
 using RepositoryPattern.Repository.Interfaces;
+using RepositoryPattern.Repository.Models;
 using System.ComponentModel.DataAnnotations;
+using System.Net;
 
 namespace RepositoryPattern.Domain.Services
 {
@@ -69,6 +71,22 @@ namespace RepositoryPattern.Domain.Services
             }
 
             return guitars;
+        }
+
+        public Task<HttpStatusCode> CreateGuitar(Guitar guitar)
+        {
+            var guitarDTO = new GuitarDTO()
+            {
+                Id = guitar.Id,
+                Make = guitar.Make,
+                Model = guitar.Model,
+                NumberOfFrets = guitar.NumberOfFrets,
+                StringGauge = guitar.StringGauge,
+                Price = guitar.Price
+            };
+
+            var response = _guitarDetails.CreateGuitarAsync(guitarDTO);
+            return response;
         }
     }
 }

@@ -1,7 +1,10 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using RepositoryPattern.Api.Mapping;
+using RepositoryPattern.Api.RequestModels;
 using RepositoryPattern.Api.ResponseModels;
 using RepositoryPattern.Domain.Interfaces;
+using RepositoryPattern.Domain.Models;
 
 namespace RepositoryPattern.Controllers
 {
@@ -64,6 +67,22 @@ namespace RepositoryPattern.Controllers
                 StringGauge = g.StringGauge,
                 Price = g.Price
             }).ToList();
+
+            return Ok(response);
+        }
+
+        [HttpPost("PostGuitar")]
+        public async Task<IActionResult> CreateGuitar(GuitarRequest request)
+        {
+            if (request.Id == Guid.Empty)
+            {
+                _logger.LogError("Invalid guitar ID provided (empty GUID).");
+                return BadRequest("Guitar ID cannot be empty.");
+            }
+
+            var mappedGuitar = GuitarMapping.ToDomain(request);
+
+            var response =  await _guitarService.CreateGuitar(mappedGuitar);
 
             return Ok(response);
         }

@@ -1,4 +1,5 @@
 ﻿using RepositoryPattern.Domain.Models;
+using System.Net;
 
 namespace RepositoryPattern.Domain.Interfaces
 {
@@ -9,5 +10,8 @@ namespace RepositoryPattern.Domain.Interfaces
 
         // The Get All Guitars method
         Task<List<Guitar>> GetAllGuitars();
+
+        // Create a new guitar
+        Task<HttpStatusCode> CreateGuitar(Guitar guitar);
     }
 }

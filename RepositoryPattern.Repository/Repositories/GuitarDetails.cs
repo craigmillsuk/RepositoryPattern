@@ -1,6 +1,7 @@
 ﻿using Microsoft.Azure.Cosmos;
 using RepositoryPattern.Repository.Interfaces;
 using RepositoryPattern.Repository.Models;
+using System.Net;
 
 namespace RepositoryPattern.Repository.Repositories
 {
@@ -11,7 +12,7 @@ namespace RepositoryPattern.Repository.Repositories
         public GuitarDetails(CosmosClient client)
         {
             _container = client.GetDatabase("GuitarDb")
-                               .GetContainer("GuitarDetails");
+                               .GetContainer("Guitar");
         }
 
         public async Task<GuitarDTO?> GetGuitarAsync(Guid id)
@@ -47,6 +48,23 @@ namespace RepositoryPattern.Repository.Repositories
             }
 
             return results;
+        }
+
+        public async Task<HttpStatusCode> CreateGuitarAsync(GuitarDTO guitar)
+        {
+            try
+            {
+                var response = await _container.CreateItemAsync(guitar, new PartitionKey(guitar.Id.ToString()));
+                return response.StatusCode;
+            }
+            catch (CosmosException ex)
+            {
+                return ex.StatusCode;
+            }
+            catch (Exception ex)
+            {
+                return HttpStatusCode.InternalServerError;
+            }
         }
     }
 }

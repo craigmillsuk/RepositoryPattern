@@ -1,4 +1,6 @@
 ﻿using RepositoryPattern.Repository.Models;
+using System.Net;
+using System.Threading.Tasks;
 
 namespace RepositoryPattern.Repository.Interfaces
 {
@@ -9,5 +11,7 @@ namespace RepositoryPattern.Repository.Interfaces
 
         // The Get All Guitar Async method
         Task<List<GuitarDTO>?> GetAllGuitarAsync();
+
+        Task<HttpStatusCode> CreateGuitarAsync(GuitarDTO guitar);
     }
 }
